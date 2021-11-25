@@ -1,10 +1,12 @@
 const NETWORK_ID = 4
-const CONTRACT_ADDRESS = "0xED5FAA0A9505b33e49662509091AAcDD73e95964"
+const CONTRACT_ADDRESS = "0x6Ce52c1b5E93899675519ceEa35A05570A02cD7F"
 const JSON_CONTRACT_ABI_PATH = "./ContractABI.json"
 var contract
 var accounts
 var web3
 var balance
+var nft_ids = []
+var nft_uris = []
 var price
 
 function metamaskReloadCallback()
@@ -70,8 +72,18 @@ async function loadDapp() {
           await window.ethereum.request({ method: "eth_requestAccounts" })
           accounts = await web3.eth.getAccounts()
           balance = await contract.methods.balanceOf(accounts[0]).call()
+          for(i=0; i<balance; i++)
+          {
+            nft_ids.push(await contract.methods.tokenOfOwnerByIndex(accounts[0],i).call())
+          }
+          console.log(nft_ids)
+          for(i=0; i<nft_ids.length; i++)
+          {
+            nft_uris.push(await contract.methods.tokenURI(nft_ids[i]).call())
+          }
+          console.log(nft_uris)
           price = await contract.methods.PRICE().call()
-          document.getElementById("web3_message").textContent="You have " + web3.utils.fromWei(balance) + " tokens"
+          document.getElementById("web3_message").textContent="You have " + balance + " tokens"
         };
         awaitContract();
       } else {
