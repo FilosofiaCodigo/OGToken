@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract MyNFT is ERC721, ERC721Enumerable, Ownable {
-  enum Color {Black, White, Yellow, Purple, Cyan, Orange}
+  enum Color {Black, White, Purple, Cyan, Yellow, Orange}
   uint public token_count;
   uint public MAX_COUNT = 88;
   uint public PRICE = 3 ether;
@@ -24,9 +24,10 @@ contract MyNFT is ERC721, ERC721Enumerable, Ownable {
   {
     color_uri[Color.Black]  = uris[0];
     color_uri[Color.White]  = uris[1];
-    color_uri[Color.Yellow] = uris[2];
-    color_uri[Color.Purple] = uris[3];
-    color_uri[Color.Cyan]   = uris[4];
+    color_uri[Color.Purple] = uris[2];
+    color_uri[Color.Cyan]   = uris[3];
+    color_uri[Color.Yellow] = uris[4];
+    color_uri[Color.Orange] = uris[5];
   }
 
   function setTokenColor(Color color, uint token_id) public

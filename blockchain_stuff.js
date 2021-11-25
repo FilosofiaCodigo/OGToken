@@ -120,4 +120,26 @@ const setColor = async (token_id, color) => {
     });
 }
 
+/*
+await setTokenURIs(
+  ["https://raw.githubusercontent.com/FilosofiaCodigo/OGToken/master/assets/Black.png",
+   "https://raw.githubusercontent.com/FilosofiaCodigo/OGToken/master/assets/White.png",
+   "https://raw.githubusercontent.com/FilosofiaCodigo/OGToken/master/assets/Purple.png",
+   "https://raw.githubusercontent.com/FilosofiaCodigo/OGToken/master/assets/Cyan.png",
+   "https://raw.githubusercontent.com/FilosofiaCodigo/OGToken/master/assets/Yellow.png",
+   "https://raw.githubusercontent.com/FilosofiaCodigo/OGToken/master/assets/Orange.png"])
+*/
+const setTokenURIs = async (uris) => {
+  const result = await contract.methods.setTokenURIs(uris)
+    .send({ from: accounts[0], gas: 0, value: 0 })
+    .on('transactionHash', function(hash){
+      document.getElementById("web3_message").textContent="Minting...";
+    })
+    .on('receipt', function(receipt){
+      document.getElementById("web3_message").textContent="Success! Minting finished.";    })
+    .catch((revertReason) => {
+      console.log("ERROR! Transaction reverted: " + revertReason.receipt.transactionHash)
+    });
+}
+
 loadDapp()
