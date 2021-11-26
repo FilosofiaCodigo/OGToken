@@ -7,8 +7,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract MyNFT is ERC721, ERC721Enumerable, Ownable {
   enum Color {Black, White, Purple, Cyan, Yellow, Orange}
-  uint public token_count;
-  uint public MAX_COUNT = 88;
+  uint public SUPPLY;
+  uint public MAX_SUPPLY = 88;
   uint public PRICE = 3 ether;
   mapping (uint=>Color) public token_color;
   mapping (Color=>string) public color_uri;
@@ -30,7 +30,7 @@ contract MyNFT is ERC721, ERC721Enumerable, Ownable {
     color_uri[Color.Orange] = uris[5];
   }
 
-  function setTokenColor(Color color, uint token_id) public
+  function setTokenColor(uint token_id, Color color) public
   {
     require(msg.sender == ownerOf(token_id), "Must be token owner.");
     token_color[token_id] = color;
@@ -39,8 +39,8 @@ contract MyNFT is ERC721, ERC721Enumerable, Ownable {
   function mint() public payable
   {
     require(msg.value >= PRICE, "Must pay price.");
-    _mint(msg.sender, token_count);
-    token_count  += 1;
+    _mint(msg.sender, SUPPLY);
+    SUPPLY  += 1;
   }
 
   function withdraw() public
