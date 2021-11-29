@@ -1,4 +1,4 @@
-const NETWORK_ID = 4
+const NETWORK_ID = 137
 const CONTRACT_ADDRESS = "0xD844a6F31eBD1813f3F132B45E3311C4c1b2ea8E"
 const JSON_CONTRACT_ABI_PATH = "./ContractABI.json"
 var contract
@@ -14,11 +14,11 @@ var price
 function metamaskReloadCallback()
 {
   window.ethereum.on('accountsChanged', (accounts) => {
-    document.getElementById("web3_message").textContent="Accounts changed, realoading...";
+    document.getElementById("web3_message").textContent="Se cambió el account, refrescando...";
     window.location.reload()
   })
   window.ethereum.on('networkChanged', (accounts) => {
-    document.getElementById("web3_message").textContent="Network changed, realoading...";
+    document.getElementById("web3_message").textContent="Se el network, refrescando...";
     window.location.reload()
   })
 }
@@ -33,7 +33,7 @@ const getWeb3 = async () => {
         resolve(web3)
       } else {
         reject("must install MetaMask")
-        document.getElementById("web3_message").textContent="Error: Please install Metamask";
+        document.getElementById("web3_message").textContent="Error: Porfavor conéctate a Metamask";
       }
     }else
     {
@@ -64,7 +64,7 @@ const getContract = async (web3) => {
 
 async function loadDapp() {
   metamaskReloadCallback()
-  document.getElementById("web3_message").textContent="Plase connect to Metamask"
+  document.getElementById("web3_message").textContent="Por favor conéctate a Metamask"
   var awaitWeb3 = async function () {
     web3 = await getWeb3()
     web3.eth.net.getId((err, netId) => {
@@ -89,12 +89,12 @@ async function loadDapp() {
           }
           console.log(token_colors)
           price = await contract.methods.PRICE().call()
-          document.getElementById("web3_message").textContent="You have " + balance + " tokens"
-          document.getElementById("available_message").textContent="" + (MAX_SUPPLY-SUPPLY) + "/" + MAX_SUPPLY + " available"
+          document.getElementById("web3_message").textContent="Tienes " + balance + " tokens"
+          document.getElementById("available_message").textContent="" + (MAX_SUPPLY-SUPPLY) + "/" + MAX_SUPPLY + " disponibles"
         };
         awaitContract();
       } else {
-        document.getElementById("web3_message").textContent="Please connect to Rinkeby Testnet";
+        document.getElementById("web3_message").textContent="Por favor conectate a Polygon";
       }
     });
   };
@@ -154,10 +154,10 @@ const mint = async () => {
   const result = await contract.methods.mint()
     .send({ from: accounts[0], gas: 0, value: price })
     .on('transactionHash', function(hash){
-      document.getElementById("web3_message").textContent="Minting...";
+      document.getElementById("web3_message").textContent="Minteando...";
     })
     .on('receipt', function(receipt){
-      document.getElementById("web3_message").textContent="Success! Minting finished.";    })
+      document.getElementById("web3_message").textContent="Éxito! El minteo se ha completado.";    })
     .catch((revertReason) => {
       console.log("ERROR! Transaction reverted: " + revertReason.receipt.transactionHash)
     });
@@ -167,10 +167,10 @@ const setColor = async (token_id, color) => {
   const result = await contract.methods.setTokenColor(token_id, color)
     .send({ from: accounts[0], gas: 0, value: 0 })
     .on('transactionHash', function(hash){
-      document.getElementById("web3_message").textContent="Minting...";
+      document.getElementById("web3_message").textContent="Minteando...";
     })
     .on('receipt', function(receipt){
-      document.getElementById("web3_message").textContent="Success! Minting finished.";    })
+      document.getElementById("web3_message").textContent="Éxito! Has cambiado el color.";    })
     .catch((revertReason) => {
       console.log("ERROR! Transaction reverted: " + revertReason.receipt.transactionHash)
     });
@@ -189,10 +189,10 @@ const setTokenURIs = async (uris) => {
   const result = await contract.methods.setTokenURIs(uris)
     .send({ from: accounts[0], gas: 0, value: 0 })
     .on('transactionHash', function(hash){
-      document.getElementById("web3_message").textContent="Minting...";
+      document.getElementById("web3_message").textContent="Estableciendo los URIs...";
     })
     .on('receipt', function(receipt){
-      document.getElementById("web3_message").textContent="Success! Minting finished.";    })
+      document.getElementById("web3_message").textContent="Éxito! Has cambiado los URIs.";    })
     .catch((revertReason) => {
       console.log("ERROR! Transaction reverted: " + revertReason.receipt.transactionHash)
     });
