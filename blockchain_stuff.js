@@ -1,4 +1,4 @@
-const NETWORK_ID = 137
+const NETWORK_ID = 4
 const CONTRACT_ADDRESS = "0xD844a6F31eBD1813f3F132B45E3311C4c1b2ea8E"
 const JSON_CONTRACT_ABI_PATH = "./ContractABI.json"
 var contract
@@ -9,7 +9,7 @@ var SUPPLY
 var MAX_SUPPLY
 var nft_ids = []
 var token_colors = []
-var price
+var PRICE
 
 function metamaskReloadCallback()
 {
@@ -76,6 +76,7 @@ async function loadDapp() {
           balance = await contract.methods.balanceOf(accounts[0]).call()
           MAX_SUPPLY = await contract.methods.MAX_SUPPLY().call()
           SUPPLY = await contract.methods.SUPPLY().call()
+          PRICE = await contract.methods.PRICE().call()
           for(i=0; i<balance; i++)
           {
             nft_ids.push(await contract.methods.tokenOfOwnerByIndex(accounts[0],i).call())
@@ -88,9 +89,11 @@ async function loadDapp() {
             addColorSelector(token_color, nft_ids[i])
           }
           console.log(token_colors)
-          price = await contract.methods.PRICE().call()
-          document.getElementById("web3_message").textContent="Tienes " + balance + " tokens"
-          document.getElementById("available_message").textContent="" + (MAX_SUPPLY-SUPPLY) + "/" + MAX_SUPPLY + " disponibles"
+          if(balance == 1)
+            document.getElementById("web3_message").textContent="Tienes 1 token"
+          else
+            document.getElementById("web3_message").textContent="Tienes " + balance + " tokens"
+          document.getElementById("available_message").textContent="" + (MAX_SUPPLY-SUPPLY) + "/" + MAX_SUPPLY + " disponibles (Precio: " + web3.utils.fromWei(PRICE) + " MATIC)"
         };
         awaitContract();
       } else {
@@ -120,39 +123,79 @@ function getTokenUrl(token_color)
 function addColorSelector(token_color, token_id)
 {
   var parent = document.getElementById("color_selectors");
+  var column = document.createElement("column");
+  column.className = "column is-one-quarter-desktop"
+  var card = document.createElement("div");
+  card.className = "card"
+  column.appendChild(card);
+  parent.appendChild(column);
 
   //Img
   var img = document.createElement("img");
+  var img_field_div = document.createElement("div");
+  var figure = document.createElement("figure");
+  img_field_div.className = "card-image"
+  figure.className = "image is-150by150"
   img.src = getTokenUrl(token_color);
   img.width = "150"
-  parent.appendChild(img);
+  img_field_div.appendChild(figure);
+  figure.appendChild(img);
+  card.appendChild(img_field_div);
+
+  //Card content
+  var card_content = document.createElement("div");
+  card_content.className = "card-content"
+  card.appendChild(card_content);
+
+  //Title
+  var title = document.createElement("p");
+  title.className = "title"
+  title.innerHTML = "OG Filosofía Código #" + token_id
+  card_content.appendChild(title);
 
   //Select
   var array = ["Black", "White", "Purple", "Cyan", "Yellow", "Orange"];
-  var selectList = document.createElement("select");
-  selectList.id = "color_select_" + token_id;
-  parent.appendChild(selectList);  
+  var field = document.createElement("div");
+  field.className = "field"
+  var label = document.createElement("label");
+  label.className = "label"
+  label.innerHTML = "Color"
+  var control = document.createElement("div");
+  control.className = "control"
+  var select_div = document.createElement("div");
+  select_div.className = "select"
+  var select_list = document.createElement("select");
+  select_div.appendChild(select_list);  
+  select_list.id = "color_select_" + token_id;
+  field.appendChild(label); 
+  field.appendChild(control); 
+  control.appendChild(select_div); 
+  card_content.appendChild(field); 
   for (var i = 0; i < array.length; i++) {
       var option = document.createElement("option");
       option.value = ""+i;
       option.text = array[i];
-      selectList.appendChild(option);
+      select_list.appendChild(option);
   }
 
   //Button
-  var btn = document.createElement("button");
-  btn.innerHTML = "Cambiar color";
+  var btn_field_div = document.createElement("footer");
+  btn_field_div.className = "card-footer"
+  var btn = document.createElement("a");
+  btn.innerHTML = "Cambia el color";
+  btn.className = "card-footer-item"
   btn.onclick = function () {
     var color_select_element = document.getElementById("color_select_" + token_id);
     var selected_color = color_select_element.options[color_select_element.selectedIndex].value;
     setColor(token_id, selected_color)
   };
-  parent.appendChild(btn);
+  btn_field_div.appendChild(btn); 
+  card.appendChild(btn_field_div);
 }
 
 const mint = async () => {
   const result = await contract.methods.mint()
-    .send({ from: accounts[0], gas: 0, value: price })
+    .send({ from: accounts[0], gas: 0, value: PRICE })
     .on('transactionHash', function(hash){
       document.getElementById("web3_message").textContent="Minteando...";
     })
