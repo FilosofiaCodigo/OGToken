@@ -8,8 +8,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract MyNFT is ERC721, ERC721Enumerable, Ownable {
   enum Color {Black, White, Purple, Cyan, Yellow, Orange}
   uint public SUPPLY;
-  uint public MAX_SUPPLY = 88;
-  uint public PRICE = 3 ether;
+  uint public MAX_SUPPLY = 66;
+  uint public PRICE = 4 ether;
   mapping (uint=>Color) public token_color;
   mapping (Color=>string) public color_uri;
 
@@ -38,7 +38,8 @@ contract MyNFT is ERC721, ERC721Enumerable, Ownable {
 
   function mint() public payable
   {
-    require(msg.value >= PRICE, "Must pay price.");
+    require(msg.value >= PRICE,  "Must pay price.");
+    require(SUPPLY < MAX_SUPPLY, "Max supply must not be reached.");
     _mint(msg.sender, SUPPLY);
     SUPPLY  += 1;
   }
